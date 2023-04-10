@@ -46,7 +46,6 @@ import software.amazon.kinesis.metrics.MetricsUtil;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -238,17 +237,9 @@ class PeriodicShardSyncManager {
         if (!isMultiStreamingMode) {
             Validate.isTrue(streamIdentifiersToFilter.size() == 1);
             return Collections.singletonMap(streamIdentifiersToFilter.iterator().next(), leases);
-        } else {
-            final Map<StreamIdentifier, List<Lease>> streamToLeasesMap = new HashMap<>();
-            for (Lease lease : leases) {
-                StreamIdentifier streamIdentifier = StreamIdentifier
-                        .multiStreamInstance(((MultiStreamLease) lease).streamIdentifier());
-                if (streamIdentifiersToFilter.contains(streamIdentifier)) {
-                    streamToLeasesMap.computeIfAbsent(streamIdentifier, s -> new ArrayList<>()).add(lease);
-                }
-            }
-            return streamToLeasesMap;
         }
+        return leases.stream().collect(Collectors.groupingBy(lease ->
+                StreamIdentifier.multiStreamInstance(((MultiStreamLease) lease).streamIdentifier())));
     }
 
 

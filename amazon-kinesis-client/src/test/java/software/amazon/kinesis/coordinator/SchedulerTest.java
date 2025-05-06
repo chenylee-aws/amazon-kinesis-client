@@ -609,7 +609,8 @@ public class SchedulerTest {
                 .collect(Collectors.toCollection(LinkedList::new));
         // Include default configs
         expectedConfig.addAll(multiStreamTracker.streamConfigList());
-
+        System.out.println("hahaha");
+        System.out.println(multiStreamTracker.orphanedStreamInitialPositionInStream());
         retrievalConfig = new RetrievalConfig(kinesisClient, multiStreamTracker, applicationName)
                 .retrievalFactory(retrievalFactory);
         scheduler = new Scheduler(

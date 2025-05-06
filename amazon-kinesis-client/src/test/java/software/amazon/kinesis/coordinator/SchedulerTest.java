@@ -629,7 +629,8 @@ public class SchedulerTest {
 
     @Test
     public final void testMultiStreamSyncFromTableCustomInitPos() {
-        Date testTimeStamp = new Date();
+        System.out.println("Start of testMultiStreamSyncFromTableCustomInitPos");
+        Date testTimeStamp = new Date(1672531199000L);
 
         // Streams in lease table but not tracked by multiStreamTracker
         List<MultiStreamLease> leasesInTable = IntStream.range(1, 3)

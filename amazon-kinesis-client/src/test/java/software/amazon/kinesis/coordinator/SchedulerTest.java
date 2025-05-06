@@ -193,7 +193,7 @@ public class SchedulerTest {
     private WorkerStateChangeListener workerStateChangeListener;
 
     @Spy
-    private TestMultiStreamTracker multiStreamTracker;
+    private TestMultiStreamTracker multiStreamTracker = new TestMultiStreamTracker();;
 
     @Mock
     private LeaseCleanupManager leaseCleanupManager;

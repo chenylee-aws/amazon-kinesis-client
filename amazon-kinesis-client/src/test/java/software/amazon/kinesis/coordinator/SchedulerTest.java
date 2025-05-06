@@ -583,6 +583,7 @@ public class SchedulerTest {
 
     @Test
     public final void testMultiStreamSyncFromTableDefaultInitPos() {
+        System.out.println("testtesttesetestsetetset");
         // Streams in lease table but not tracked by multiStreamTracker
         List<MultiStreamLease> leasesInTable = IntStream.range(1, 3)
                 .mapToObj(streamId -> new MultiStreamLease()

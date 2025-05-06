@@ -47,7 +47,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.OngoingStubbing;
 import software.amazon.awssdk.arns.Arn;
@@ -192,17 +191,16 @@ public class SchedulerTest {
     @Mock
     private WorkerStateChangeListener workerStateChangeListener;
 
-    @Spy
-    private TestMultiStreamTracker multiStreamTracker;
-
     @Mock
     private LeaseCleanupManager leaseCleanupManager;
 
     private Map<StreamIdentifier, ShardSyncTaskManager> shardSyncTaskManagerMap;
     private Map<StreamIdentifier, ShardDetector> shardDetectorMap;
+    private TestMultiStreamTracker multiStreamTracker;
 
     @Before
     public void setup() {
+        multiStreamTracker = spy(new TestMultiStreamTracker());
         shardSyncTaskManagerMap = new HashMap<>();
         shardDetectorMap = new HashMap<>();
         shardRecordProcessorFactory = new TestShardRecordProcessorFactory();
@@ -592,9 +590,12 @@ public class SchedulerTest {
                 .collect(Collectors.toCollection(LinkedList::new));
         // Include a stream that is already tracked by multiStreamTracker, just to make sure we will not touch this
         // stream config later
+        System.out.println(leasesInTable);
+
         leasesInTable.add(new MultiStreamLease()
                 .streamIdentifier("123456789012:stream1:1")
                 .shardId("some_random_shard_id"));
+        System.out.println(leasesInTable);
 
         // Expected StreamConfig after running syncStreamsFromLeaseTableOnAppInit
         // By default, Stream not present in multiStreamTracker will have initial position of LATEST
@@ -606,7 +607,8 @@ public class SchedulerTest {
                 .collect(Collectors.toCollection(LinkedList::new));
         // Include default configs
         expectedConfig.addAll(multiStreamTracker.streamConfigList());
-
+        System.out.println("hahaha");
+        System.out.println(multiStreamTracker.orphanedStreamInitialPositionInStream());
         retrievalConfig = new RetrievalConfig(kinesisClient, multiStreamTracker, applicationName)
                 .retrievalFactory(retrievalFactory);
         scheduler = new Scheduler(
@@ -617,6 +619,7 @@ public class SchedulerTest {
                 metricsConfig,
                 processorConfig,
                 retrievalConfig);
+        System.out.println(scheduler.currentStreamConfigMap());
         scheduler.syncStreamsFromLeaseTableOnAppInit(leasesInTable);
         Map<StreamIdentifier, StreamConfig> expectedConfigMap =
                 expectedConfig.stream().collect(Collectors.toMap(StreamConfig::streamIdentifier, Function.identity()));
@@ -625,7 +628,8 @@ public class SchedulerTest {
 
     @Test
     public final void testMultiStreamSyncFromTableCustomInitPos() {
-        Date testTimeStamp = new Date();
+        System.out.println("Start of testMultiStreamSyncFromTableCustomInitPos");
+        Date testTimeStamp = new Date(1672531199000L);
 
         // Streams in lease table but not tracked by multiStreamTracker
         List<MultiStreamLease> leasesInTable = IntStream.range(1, 3)
@@ -665,6 +669,7 @@ public class SchedulerTest {
                 metricsConfig,
                 processorConfig,
                 retrievalConfig);
+        Assert.assertTrue(scheduler.currentStreamConfigMap().isEmpty());
         scheduler.syncStreamsFromLeaseTableOnAppInit(leasesInTable);
         Map<StreamIdentifier, StreamConfig> expectedConfigMap =
                 expectedConfig.stream().collect(Collectors.toMap(sc -> sc.streamIdentifier(), sc -> sc));

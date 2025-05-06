@@ -69,6 +69,7 @@ public interface StreamTracker {
      * @param streamIdentifier stream for which to create a new config
      */
     default StreamConfig createStreamConfig(StreamIdentifier streamIdentifier) {
+        System.out.println("orphanced " + orphanedStreamInitialPositionInStream());
         return new StreamConfig(streamIdentifier, orphanedStreamInitialPositionInStream());
     }
 

@@ -203,6 +203,7 @@ public class SchedulerTest {
 
     @Before
     public void setup() {
+        System.out.println("setuypfpsdfi " + multiStreamTracker.orphanedStreamInitialPositionInStream());
         shardSyncTaskManagerMap = new HashMap<>();
         shardDetectorMap = new HashMap<>();
         shardRecordProcessorFactory = new TestShardRecordProcessorFactory();

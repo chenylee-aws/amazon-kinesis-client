@@ -592,9 +592,12 @@ public class SchedulerTest {
                 .collect(Collectors.toCollection(LinkedList::new));
         // Include a stream that is already tracked by multiStreamTracker, just to make sure we will not touch this
         // stream config later
+        System.out.println(leasesInTable);
+
         leasesInTable.add(new MultiStreamLease()
                 .streamIdentifier("123456789012:stream1:1")
                 .shardId("some_random_shard_id"));
+        System.out.println(leasesInTable);
 
         // Expected StreamConfig after running syncStreamsFromLeaseTableOnAppInit
         // By default, Stream not present in multiStreamTracker will have initial position of LATEST
@@ -617,6 +620,7 @@ public class SchedulerTest {
                 metricsConfig,
                 processorConfig,
                 retrievalConfig);
+        System.out.println(scheduler.currentStreamConfigMap());
         scheduler.syncStreamsFromLeaseTableOnAppInit(leasesInTable);
         Map<StreamIdentifier, StreamConfig> expectedConfigMap =
                 expectedConfig.stream().collect(Collectors.toMap(StreamConfig::streamIdentifier, Function.identity()));
@@ -665,6 +669,7 @@ public class SchedulerTest {
                 metricsConfig,
                 processorConfig,
                 retrievalConfig);
+        Assert.assertTrue(scheduler.currentStreamConfigMap().isEmpty());
         scheduler.syncStreamsFromLeaseTableOnAppInit(leasesInTable);
         Map<StreamIdentifier, StreamConfig> expectedConfigMap =
                 expectedConfig.stream().collect(Collectors.toMap(sc -> sc.streamIdentifier(), sc -> sc));

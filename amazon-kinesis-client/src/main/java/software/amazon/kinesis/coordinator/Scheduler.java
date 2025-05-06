@@ -790,7 +790,7 @@ public class Scheduler implements Runnable {
                 .forEach(streamIdentifier -> {
                     final StreamConfig streamConfig = streamTracker.createStreamConfig(streamIdentifier);
                     currentStreamConfigMap.put(streamIdentifier, streamConfig);
-                    log.info("Cached {}", streamConfig);
+                    log.error("Cached {}", streamConfig);
                 });
     }
 

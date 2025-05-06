@@ -192,18 +192,16 @@ public class SchedulerTest {
     @Mock
     private WorkerStateChangeListener workerStateChangeListener;
 
-    @Spy
-    private TestMultiStreamTracker multiStreamTracker = new TestMultiStreamTracker();
-
     @Mock
     private LeaseCleanupManager leaseCleanupManager;
 
     private Map<StreamIdentifier, ShardSyncTaskManager> shardSyncTaskManagerMap;
     private Map<StreamIdentifier, ShardDetector> shardDetectorMap;
+    private TestMultiStreamTracker multiStreamTracker;
 
     @Before
     public void setup() {
-        System.out.println("setuypfpsdfi " + multiStreamTracker.orphanedStreamInitialPositionInStream());
+        multiStreamTracker = spy(new TestMultiStreamTracker());
         shardSyncTaskManagerMap = new HashMap<>();
         shardDetectorMap = new HashMap<>();
         shardRecordProcessorFactory = new TestShardRecordProcessorFactory();

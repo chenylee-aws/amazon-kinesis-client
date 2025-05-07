@@ -100,6 +100,7 @@ import software.amazon.kinesis.processor.MultiStreamTracker;
 import software.amazon.kinesis.processor.ProcessorConfig;
 import software.amazon.kinesis.processor.ShardRecordProcessor;
 import software.amazon.kinesis.processor.ShardRecordProcessorFactory;
+import software.amazon.kinesis.processor.StreamTracker;
 import software.amazon.kinesis.retrieval.RecordsPublisher;
 import software.amazon.kinesis.retrieval.RetrievalConfig;
 import software.amazon.kinesis.retrieval.RetrievalFactory;
@@ -192,8 +193,7 @@ public class SchedulerTest {
     @Mock
     private WorkerStateChangeListener workerStateChangeListener;
 
-    @Spy
-    private TestMultiStreamTracker multiStreamTracker;
+    private StreamTracker multiStreamTracker;
 
     @Mock
     private LeaseCleanupManager leaseCleanupManager;
@@ -203,6 +203,7 @@ public class SchedulerTest {
 
     @Before
     public void setup() {
+        multiStreamTracker = spy(new TestMultiStreamTracker());
         shardSyncTaskManagerMap = new HashMap<>();
         shardDetectorMap = new HashMap<>();
         shardRecordProcessorFactory = new TestShardRecordProcessorFactory();
@@ -1750,7 +1751,7 @@ public class SchedulerTest {
     // TODO: Upgrade to mockito >= 2.7.13, and use Spy on MultiStreamTracker to directly access the default methods
     //  without implementing TestMultiStreamTracker class
     @NoArgsConstructor
-    private class TestMultiStreamTracker implements MultiStreamTracker {
+    private static class TestMultiStreamTracker implements MultiStreamTracker {
         @Override
         public List<StreamConfig> streamConfigList() {
             final InitialPositionInStreamExtended latest =

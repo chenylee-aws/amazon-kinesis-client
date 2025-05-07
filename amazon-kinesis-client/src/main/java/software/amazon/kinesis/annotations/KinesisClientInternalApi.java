@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
  * Marker interface for 'internal' APIs that should not be used outside the core module.
  * Breaking changes can and will be introduced to elements marked as KinesisClientInternalApi.
  * Users of the KCL should not depend on any packages, types, fields, constructors, or methods with this annotation.
+ *
+ * test
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface KinesisClientInternalApi {}

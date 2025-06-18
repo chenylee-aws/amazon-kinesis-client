@@ -916,35 +916,44 @@ public class DynamoDBLeaseRefresher implements LeaseRefresher {
                 throw new DependencyException(e);
             }
         } catch (ConditionalCheckFailedException e) {
+            final Lease ddbLease;
+            if (!e.hasItem()) {
+                // This is a workaround for unit testing and ddblocal since it doesn't return the item
+                // in the error response. Can remove it once the functionality is supported in ddblocal.
+                ddbLease = getLease(lease.leaseKey());
+            } else {
+                ddbLease = serializer.fromDynamoRecord(e.item());
+            }
             // run this code block only if the in-memory lease doesn't have the shutdown attributes
             if (!lease.shutdownRequested()) {
-                final Lease ddbLease;
-                if (!e.hasItem()) {
-                    // This is a workaround for unit testing and ddblocal since it doesn't return the item
-                    // in the error response. Can remove it once the functionality is supported in ddblocal.
-                    ddbLease = getLease(lease.leaseKey());
-                } else {
-                    ddbLease = serializer.fromDynamoRecord(e.item());
-                }
                 if (ddbLease != null && ddbLease.shutdownRequested()) {
                     return handleGracefulShutdown(lease, ddbLease);
                 }
             }
-            log.debug(
-                    "Lease renewal failed for lease with key {} because the lease counter was not {}",
-                    lease.leaseKey(),
-                    lease.leaseCounter());
             // If we had a spurious retry during the Dynamo update, then this conditional PUT failure
-            // might be incorrect. So, we get the item straight away and check if the lease owner + lease
-            // counter are what we expected.
+            // might be incorrect. So, we check if the lease owner + lease counter are what we expected.
             // We need to use actualOwner because leaseOwner might have been updated to the nextOwner
             // in the previous renewal.
             final String expectedOwner = lease.actualOwner();
-            Long expectedCounter = lease.leaseCounter() + 1;
-            final Lease updatedLease = getLease(lease.leaseKey());
-            if (updatedLease == null
-                    || !expectedOwner.equals(updatedLease.leaseOwner())
-                    || !expectedCounter.equals(updatedLease.leaseCounter())) {
+            final Long expectedCounter = lease.leaseCounter() + 1;
+            if (ddbLease == null
+                    || !expectedOwner.equals(ddbLease.leaseOwner())
+                    || !expectedCounter.equals(ddbLease.leaseCounter())) {
+                if (ddbLease != null) {
+                    log.info(
+                            "Failed to renew lease with key {}: expected lease counter {} but found {}. "
+                                    + "Current owner is '{}' previous owner was '{}'",
+                            lease.leaseKey(),
+                            lease.leaseCounter(),
+                            ddbLease.leaseCounter(),
+                            ddbLease.leaseOwner(),
+                            lease.leaseOwner());
+                } else {
+                    log.info(
+                            "Failed to renew lease with key {}: expected lease counter {} but lease doesn't exist",
+                            lease.leaseKey(),
+                            lease.leaseCounter());
+                }
                 return false;
             }
 

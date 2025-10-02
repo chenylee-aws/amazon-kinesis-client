@@ -33,8 +33,9 @@ public enum ClientVersion {
      */
     CLIENT_VERSION_UPGRADE_FROM_2X,
     /**
-     * This version is used during rollback from CLIENT_VERSION_UPGRADE_FROM_2X or CLIENT_VERSION_3X_WITH_ROLLBACK,
-     * which can only be initiated using a KCL migration tool, when customer wants to revert to KCLv2.x functionality.
+     * This version is used when customer explicitly configures CLIENT_VERSION_CONFIG_2X
+     * to force KCL to operate in 2.x mode, or during rollback from CLIENT_VERSION_UPGRADE_FROM_2X
+     * or CLIENT_VERSION_3X_WITH_ROLLBACK using a KCL migration tool.
      * In this version, KCL will not emit WorkerMetricStats and run KCLv2.x algorithms for leader election
      * and lease assignment. In this version, KCL will monitor for roll-forward scenario where
      * client version is updated to CLIENT_VERSION_UPGRADE_FROM_2X using the migration tool.

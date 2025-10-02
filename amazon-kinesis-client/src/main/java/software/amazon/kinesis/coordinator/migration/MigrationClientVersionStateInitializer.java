@@ -42,11 +42,13 @@ import static software.amazon.kinesis.coordinator.migration.MigrationState.MIGRA
  * state to initialize KCL when it is starting up. The initial state is determined based on the
  * customer configured {@link ClientVersionConfig} and the current {@link MigrationState} in DDB,
  * as follows
- * ClientVersionConfig | MigrationState (DDB)             | initial client version
+ * ClientVersionConfig | MigrationState (DDB)            | initial client version
  * --------------------+---------------------------------+--------------------------------
  * COMPATIBLE_WITH_2X  | Does not exist                  | CLIENT_VERSION_UPGRADE_FROM_2X
+ * 2X	               | Does not exist	                 | CLIENT_VERSION_2X
  * 3X                  | Does not exist                  | CLIENT_VERSION_3X
  * COMPATIBLE_WITH_2X  | CLIENT_VERSION_3X_WITH_ROLLBACK | CLIENT_VERSION_3X_WITH_ROLLBACK
+ * 2X	               | CLIENT_VERSION_3X_WITH_ROLLBACK | CLIENT_VERSION_3X_WITH_ROLLBACK
  * 3X                  | CLIENT_VERSION_3X_WITH_ROLLBACK | CLIENT_VERSION_3X
  * any                 | CLIENT_VERSION_2X               | CLIENT_VERSION_2X
  * any                 | CLIENT_VERSION_UPGRADE_FROM_2X  | CLIENT_VERSION_UPGRADE_FROM_2X
@@ -180,6 +182,8 @@ public class MigrationClientVersionStateInitializer {
 
     private ClientVersion getNextClientVersionBasedOnConfigVersion() {
         switch (clientVersionConfig) {
+            case CLIENT_VERSION_CONFIG_2X:
+                return CLIENT_VERSION_2X;
             case CLIENT_VERSION_CONFIG_COMPATIBLE_WITH_2X:
                 return CLIENT_VERSION_UPGRADE_FROM_2X;
             case CLIENT_VERSION_CONFIG_3X:

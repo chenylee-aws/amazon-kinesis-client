@@ -112,6 +112,12 @@ public class CoordinatorConfig {
      */
     public enum ClientVersionConfig {
         /**
+         * Sets KCL to operate in 2.x mode without automatic migration to 3.x algorithms.
+         * Use this to maintain compatibility with existing 2.x deployments. This setting won't
+         * trigger automatic rollback if application is already on V3
+         */
+        CLIENT_VERSION_CONFIG_2X,
+        /**
          * For an application that was operating with previous KCLv2.x, during
          * upgrade to KCLv3.x, a migration process is needed due to the incompatible
          * changes between the 2 versions. During the migration process, application

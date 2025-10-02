@@ -107,6 +107,7 @@ public class MigrationStateMachineTest {
 
     @ParameterizedTest
     @CsvSource({
+        "CLIENT_VERSION_CONFIG_2X, CLIENT_VERSION_2X",
         "CLIENT_VERSION_CONFIG_COMPATIBLE_WITH_2X, CLIENT_VERSION_UPGRADE_FROM_2X",
         "CLIENT_VERSION_CONFIG_3X, CLIENT_VERSION_3X"
     })

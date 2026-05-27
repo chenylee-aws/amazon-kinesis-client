@@ -451,6 +451,12 @@ public class DynamoDBLeaseRenewer implements LeaseRenewer {
                         .build());
             }
             ownedLeases.put(authoritativeLease.leaseKey(), authoritativeLease);
+            log.debug(
+                    "{}: addLeasesToRenew added lease {} with concurrencyToken {} shutdownRequested={}",
+                    workerIdentifier,
+                    authoritativeLease.leaseKey(),
+                    authoritativeLease.concurrencyToken(),
+                    authoritativeLease.shutdownRequested());
         }
     }
 

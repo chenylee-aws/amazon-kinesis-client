@@ -1131,10 +1131,11 @@ public class Scheduler implements Runnable {
                     builder.append(ShardInfo.getLeaseKey(shardInfo));
                     firstItem = false;
                 }
-                slog.info("Current stream shard assignments: " + builder.toString());
+                slog.info("Current stream shard assignments: " + builder + " worker "
+                        + leaseCoordinator.workerIdentifier());
             }
         } else {
-            slog.info("No activities assigned");
+            slog.info("No activities assigned" + " worker " + leaseCoordinator.workerIdentifier());
         }
 
         return prioritizedShards;
@@ -1162,6 +1163,12 @@ public class Scheduler implements Runnable {
             consumer = buildConsumer(shardInfo, shardRecordProcessorFactory, leaseCleanupManager);
             shardInfoShardConsumerMap.put(shardInfo, consumer);
             slog.infoForce("Created new shardConsumer for : " + shardInfo);
+        } else if (consumer.isShutdown()) {
+            log.warn(
+                    "{}: Not recreating shardConsumer for {} because shutdownReason is {} (only LEASE_LOST triggers recreation)",
+                    leaseManagementConfig.workerIdentifier(),
+                    ShardInfo.getLeaseKey(shardInfo),
+                    consumer.shutdownReason());
         }
         return consumer;
     }

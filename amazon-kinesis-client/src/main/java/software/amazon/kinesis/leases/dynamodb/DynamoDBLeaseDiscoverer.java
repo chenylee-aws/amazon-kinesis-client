@@ -119,6 +119,11 @@ public class DynamoDBLeaseDiscoverer implements LeaseDiscoverer {
             // if checkpointOwner is not null, it means that the lease is still pending shutdown for the last owner.
             // Don't add the lease to the in-memory map yet.
             if (lease.checkpointOwner() != null) {
+                log.debug(
+                        "{}: LeaseDiscoverer skipping lease {} because checkpointOwner is {}",
+                        workerIdentifier,
+                        leaseKey,
+                        lease.checkpointOwner());
                 return null;
             }
             // when a new lease is discovered, set the lastCounterIncrementNanos to current time as the time

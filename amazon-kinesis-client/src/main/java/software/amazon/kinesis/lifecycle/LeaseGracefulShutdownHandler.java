@@ -125,6 +125,14 @@ public class LeaseGracefulShutdownHandler {
         final ShardConsumer consumer = shardInfoShardConsumerMap.get(shardInfo);
         if (consumer == null || consumer.isShutdown()) {
             shardInfoLeasePendingShutdownMap.remove(shardInfo);
+            if (consumer == null) {
+                log.warn(
+                        "enqueueShutdown: No consumer found for lease {} on worker {} (shardInfo={}). "
+                                + "Cannot complete graceful handoff - lease will be stuck as checkpointOwner.",
+                        lease.leaseKey(),
+                        leaseCoordinator.workerIdentifier(),
+                        shardInfo);
+            }
         } else {
             // there could be change shard get enqueued after getting removed. This should be okay because
             // this enqueue will be no-op and will be removed again because the shardConsumer associated with the

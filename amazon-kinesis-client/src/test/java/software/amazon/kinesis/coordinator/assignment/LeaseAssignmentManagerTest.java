@@ -1185,7 +1185,8 @@ class LeaseAssignmentManagerTest {
                 gracefulLeaseHandoffConfig,
                 LeaseAssignmentStrategy.WORKER_UTILIZATION_AWARE,
                 2 * failoverTimeMillis,
-                streamIdCacheManager);
+                streamIdCacheManager,
+                0);
 
         leaseAssignmentManager.start();
 
@@ -1217,7 +1218,8 @@ class LeaseAssignmentManagerTest {
                 gracefulLeaseHandoffConfig,
                 LeaseAssignmentStrategy.WORKER_UTILIZATION_AWARE,
                 leaseAssignmentIntervalMillis,
-                streamIdCacheManager);
+                streamIdCacheManager,
+                0);
 
         leaseAssignmentManager.start();
 
@@ -1294,7 +1296,8 @@ class LeaseAssignmentManagerTest {
                 gracefulLeaseHandoffConfig,
                 strategy,
                 2 * leaseDurationMillis,
-                streamIdCacheManager);
+                streamIdCacheManager,
+                0);
         leaseAssignmentManager.start();
         return leaseAssignmentManager;
     }

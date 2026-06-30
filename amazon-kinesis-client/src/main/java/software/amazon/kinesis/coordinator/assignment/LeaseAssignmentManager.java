@@ -96,7 +96,7 @@ public final class LeaseAssignmentManager {
      * Internal threadpool used to parallely perform assignment operation by calling storage.
      */
     private static final ExecutorService LEASE_ASSIGNMENT_CALL_THREAD_POOL =
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            Executors.newCachedThreadPool();
 
     /**
      * Used for loading the lease table.
@@ -124,6 +124,7 @@ public final class LeaseAssignmentManager {
     private final Map<String, Lease> prevRunLeasesState = new HashMap<>();
     private final long leaseAssignmentIntervalMillis;
     private final StreamIdCacheManager streamIdCacheManager;
+    private final int leaseTableScanTotalSegments;
 
     private Future<?> managerFuture;
 
@@ -718,7 +719,7 @@ public final class LeaseAssignmentManager {
 
         private CompletableFuture<Map.Entry<List<Lease>, List<String>>> loadLeaseListAsync() {
             return CompletableFuture.supplyAsync(
-                    () -> loadWithRetry(() -> leaseRefresher.listLeasesParallely(LEASE_ASSIGNMENT_CALL_THREAD_POOL, 0)),
+                    () -> loadWithRetry(() -> leaseRefresher.listLeasesParallely(LEASE_ASSIGNMENT_CALL_THREAD_POOL, leaseTableScanTotalSegments)),
                     DDB_TABLE_LOADER_THREAD_POOL);
         }
 
